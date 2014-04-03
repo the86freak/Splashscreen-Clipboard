@@ -1,0 +1,4 @@
+#include "resource.h"
+
+IDI_APP ICON "app.ico"
+SPLASH_GIF RCDATA "default-loading.png"
