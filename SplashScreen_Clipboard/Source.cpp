@@ -196,9 +196,6 @@ void CreateChildProcess()
 	// Create a child process that uses the previously created pipes for STDIN and STDOUT.
 { 
 	SECURITY_ATTRIBUTES saAttr; 
-	//printf("\n->Start of parent execution.\n");
-
-	// Set the bInheritHandle flag so pipe handles are inherited. 
 
 	saAttr.nLength = sizeof(SECURITY_ATTRIBUTES); 
 	saAttr.bInheritHandle = TRUE; 
@@ -210,7 +207,7 @@ void CreateChildProcess()
 	BOOL bSuccess = FALSE; 
 
 	// Set up members of the PROCESS_INFORMATION structure. 
-
+	
 	ZeroMemory( &piProcInfo, sizeof(PROCESS_INFORMATION) );
 
 	// Set up members of the STARTUPINFO structure. 
@@ -222,7 +219,7 @@ void CreateChildProcess()
 	siStartInfo.hStdOutput = g_hChildStd_OUT_Wr;
 	siStartInfo.hStdInput = g_hChildStd_IN_Rd;
 	siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
-
+	
 	// Create the child process. 
 
 	bSuccess = CreateProcess(NULL, 

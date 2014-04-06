@@ -18,7 +18,7 @@ protected:
 	HWND								m_hParentWnd;
 	std::wstring				m_ProgressMsg;		
   UINT_PTR            m_TimerId;        
-
+   
 public:
 	CSplashWnd( HWND hParent = NULL );
 	~CSplashWnd();														
