@@ -79,7 +79,7 @@ void ErrorExit(PTSTR);
 
 using namespace std;
 
-
+ 
 
 wchar_t *convertCharArrayToLPCWSTR(const char* charArray)
 { 
@@ -92,7 +92,7 @@ wchar_t *convertCharArrayToLPCWSTR(const char* charArray)
 	//MultiByteToWideChar(CP_ACP, 0, charArray, -1, wString, newsize);
 
 	return wString;
-}
+} 
 
 
 
@@ -142,7 +142,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance, HINSTANCE hPrevInstance,
 	Gdiplus::GdiplusStartup(&gdiToken,&gdiSI,&gdiSO);
 	gdiSO.NotificationHook(&gdiHookToken);
 
-	CreateChildProcess();
+	
 	CSplashWnd splash;
 
 	Gdiplus::Bitmap* pImage;
@@ -163,19 +163,22 @@ int WINAPI WinMain (HINSTANCE hThisInstance, HINSTANCE hPrevInstance,
 
 	delete pImage; // you are free to delete now
 	splash.Show();
-	BOOL loaded = FALSE;
-	//HANDLE hParentStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-
-		UINT progressTotal = 0;
-		UINT oldProgress = -1;
-
-		// Main message loop:
-		while (GetMessage(&msg, NULL, 0, 0))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
 	
+	CreateChildProcess();
+
+	BOOL loaded = FALSE;
+	UINT progressTotal = 0;
+	UINT oldProgress = -1;
+
+
+
+	// Main message loop:
+	while (GetMessage(&msg, NULL, 0, 0))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
 	gdiSO.NotificationUnhook(gdiHookToken);
 	Gdiplus::GdiplusShutdown(gdiToken);
 
@@ -234,15 +237,19 @@ void CreateChildProcess()
 		&piProcInfo);  // receives PROCESS_INFORMATION 
 
 	// If an error occurs, exit the application. 
-	if ( ! bSuccess ){
-		ErrorExit(TEXT("CreateProcess"));
+
+	DWORD a = GetLastError();
+
+	if ( bSuccess == 0){
+		::MessageBox(NULL, L"Die Anwendung konnte nicht gefunden werden.", L"Info", MB_ICONINFORMATION);
+		//ErrorExit(TEXT("CreateProcess"));
+		exit(0);
 	}
 	else 
 	{
 		// Close handles to the child process and its primary thread.
 		// Some applications might keep these handles to monitor the status
 		// of the child process, for example. 
-
 		CloseHandle(piProcInfo.hProcess);
 		CloseHandle(piProcInfo.hThread);
 	}
