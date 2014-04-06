@@ -4,5 +4,5 @@
 **/*.vcxproj.user
 **/*.vcxproj.filters
 **/ipch
-**/Release
+/*/Release
 **/Debug

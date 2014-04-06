@@ -14,7 +14,7 @@
     <ProjectGuid>{CE9F9A98-2D49-462C-AE9A-6F489C570638}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SplashScreen_Clipboard</RootNamespace>
-    <ProjectName>Marktfuehrer-L</ProjectName>
+    <ProjectName>SplashScreen_Clipboard</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

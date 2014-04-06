@@ -76,7 +76,7 @@ void ErrorExit(PTSTR);
 
 #define MAX_LOADSTRING 100
 
-
+ 
 using namespace std;
 
  
