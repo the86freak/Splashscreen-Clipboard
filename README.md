@@ -26,3 +26,7 @@ There was a dependency with mscvr110.dll. But the compiler includes the dll now 
 
 The project-files are used with Visual Studio 2012, but the compilation is configured for Visual C++ 10.
 
+
+How to use
+----------------------
+You can use the exe in the Release-Folder or compile your own. 
