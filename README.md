@@ -18,11 +18,11 @@ You can use your own splash-image:
 
 
 Current project state is really basic and just supported for
-- Windows XP + .Net 4.0
-- Windows Vista/7/8/8.1
+- Windows XP/Vista/7/8/8.1
 
-just Windows XP needs .Net 4.0
-If someone can tell me why, you're welcome :-)
+There was a bug, that Windows XP needed .Net 4.0, but seems to be fixed now.
+There was a dependency with mscvr110.dll. But the compiler includes the dll now into the exe.
+
 
 The project-files are used with Visual Studio 2012, but the compilation is configured for Visual C++ 10.
 
