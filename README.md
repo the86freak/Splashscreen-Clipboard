@@ -12,8 +12,9 @@ Where XY should be the total amount of the progress already made during the load
 This value is handeled to the progress bar to display the current status.
 The app closes itself after 100 has been reached.
 
+
 You can use your own splash-image:
-- simply put a file called 'splash.jpg' in the same folder as the splash-Screen-exe.
+- simply put a file called *splash.png* in the same folder as the splash-Screen-exe.
 - If non is found, it falls back to the default-screen.
 
 
@@ -27,6 +28,11 @@ There was a dependency with mscvr110.dll. But the compiler includes the dll now 
 The project-files are used with Visual Studio 2012, but the compilation is configured for Visual C++ 10.
 
 
-How to use
-----------------------
+
+#How to use
 You can use the exe in the Release-Folder or compile your own. 
+
+Then just add the JS/splashinfo.js to your app and call
+```js
+splashInfo.set('Message you want to show above the progress bar', 10, [waitTime/Timeout]);
+```

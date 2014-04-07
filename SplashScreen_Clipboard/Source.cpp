@@ -73,44 +73,13 @@ void CreateChildProcess(void);
 void WriteToPipe(void); 
 void ReadFromPipe(void); 
 void ErrorExit(PTSTR); 
+BOOL checkIfProcessIsAlreadyRunning(void);
 
 #define MAX_LOADSTRING 100
 
- 
+
 using namespace std;
 
- 
-
-wchar_t *convertCharArrayToLPCWSTR(const char* charArray)
-{ 
-	size_t newsize = strlen(charArray) + 1;
-	wchar_t* wString=new wchar_t[newsize];
-
-	size_t convertedChars = 0;
-	mbstowcs_s(&convertedChars, wString, newsize, charArray, _TRUNCATE);
-
-	//MultiByteToWideChar(CP_ACP, 0, charArray, -1, wString, newsize);
-
-	return wString;
-} 
-
-
-
-std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
-	std::stringstream ss(s);
-	std::string item;
-	while (std::getline(ss, item, delim)) {
-		elems.push_back(item);
-	}
-	return elems;
-}
-
-
-std::vector<std::string> split(const std::string &s, char delim) {
-	std::vector<std::string> elems;
-	split(s, delim, elems);
-	return elems;
-}
 
 MSG msg; // Window Messages that are thrown back and forth
 
@@ -132,64 +101,73 @@ int WINAPI WinMain (HINSTANCE hThisInstance, HINSTANCE hPrevInstance,
 					//int _tmain(int argc, TCHAR *argv[]) 
 { 
 	try{
-	MyRegisterClass(hThisInstance);
+		MyRegisterClass(hThisInstance);
 
-	Gdiplus::GdiplusStartupInput gdiSI;
-	Gdiplus::GdiplusStartupOutput gdiSO;
-	ULONG_PTR gdiToken;
-	ULONG_PTR gdiHookToken;
-	gdiSI.SuppressBackgroundThread = TRUE;
-	Gdiplus::GdiplusStartup(&gdiToken,&gdiSI,&gdiSO);
-	gdiSO.NotificationHook(&gdiHookToken);
+		Gdiplus::GdiplusStartupInput gdiSI;
+		Gdiplus::GdiplusStartupOutput gdiSO;
+		ULONG_PTR gdiToken;
+		ULONG_PTR gdiHookToken;
+		gdiSI.SuppressBackgroundThread = TRUE;
+		Gdiplus::GdiplusStartup(&gdiToken,&gdiSI,&gdiSO);
+		gdiSO.NotificationHook(&gdiHookToken);
 
-	
-	CSplashWnd splash;
 
-	Gdiplus::Bitmap* pImage;
+		CSplashWnd splash;
 
-	if (_access("splash.jpg", 0)==-1)
-	{			
-		CGdiPlusBitmapResource* pBitmap = new CGdiPlusBitmapResource;
-		if (pBitmap->Load(SPLASH_GIF))
-		{
-			pImage = pBitmap->m_pBitmap;
+		Gdiplus::Bitmap* pImage;
+
+		if (_access("splash.png", 0)==-1)
+		{			
+			CGdiPlusBitmapResource* pBitmap = new CGdiPlusBitmapResource;
+			if (pBitmap->Load(SPLASH_GIF))
+			{
+				pImage = pBitmap->m_pBitmap;
+			}
+		}else{
+			pImage = Gdiplus::Bitmap::FromFile(L"splash.png");
 		}
-	}else{
-		pImage = Gdiplus::Bitmap::FromFile(L"splash.jpg");
-	}
 
-	splash.SetImage(pImage);
-	splash.SetWindowName(L"Marktfuehrer wird geladen...");
+		splash.SetImage(pImage);
+		splash.SetWindowName(L"Marktfuehrer wird geladen...");
 
-	delete pImage; // you are free to delete now
-	splash.Show();
-	
-	CreateChildProcess();
-
-	BOOL loaded = FALSE;
-	UINT progressTotal = 0;
-	UINT oldProgress = -1;
+		delete pImage; // you are free to delete now
+		
 
 
 
-	// Main message loop:
-	while (GetMessage(&msg, NULL, 0, 0))
-	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
+		if (checkIfProcessIsAlreadyRunning())
+		{
+			::MessageBox(NULL, L"Die Anwendung wurde bereits geladen...", L"Info", MB_ICONINFORMATION);
+			exit(0);
+		}else
+		{
+			splash.Show();
+			CreateChildProcess();
 
-	gdiSO.NotificationUnhook(gdiHookToken);
-	Gdiplus::GdiplusShutdown(gdiToken);
+			BOOL loaded = FALSE;
+			UINT progressTotal = 0;
+			UINT oldProgress = -1;
 
-	exit(0);
-	return (int) msg.wParam;
+			// Main message loop:
+			while (GetMessage(&msg, NULL, 0, 0))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+
+			gdiSO.NotificationUnhook(gdiHookToken);
+			Gdiplus::GdiplusShutdown(gdiToken);
+
+			exit(0);
+			return (int) msg.wParam;
+		}
 	}
 	catch(exception& e){
 		::MessageBox(NULL, L"Die Anwendung konnte die Ladeanzeige nicht finden. Der Marktführer wurde dennoch gestartet. Das kann einen Momemt dauern. Dabei wir Ihnen kein Ladebildschirm gezeigt.", L"Failed", MB_ICONSTOP);
 		exit(0);
 		return (int) msg.wParam;
 	}
+
 } 
 
 
@@ -210,7 +188,7 @@ void CreateChildProcess()
 	BOOL bSuccess = FALSE; 
 
 	// Set up members of the PROCESS_INFORMATION structure. 
-	
+
 	ZeroMemory( &piProcInfo, sizeof(PROCESS_INFORMATION) );
 
 	// Set up members of the STARTUPINFO structure. 
@@ -222,7 +200,7 @@ void CreateChildProcess()
 	siStartInfo.hStdOutput = g_hChildStd_OUT_Wr;
 	siStartInfo.hStdInput = g_hChildStd_IN_Rd;
 	siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
-	
+
 	// Create the child process. 
 
 	bSuccess = CreateProcess(NULL, 
@@ -364,4 +342,59 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
+}
+
+
+#pragma comment(lib, "psapi.lib")
+#include <psapi.h>
+
+// To ensure correct resolution of symbols, add Psapi.lib to TARGETLIBS
+// and compile with -DPSAPI_VERSION=1
+
+BOOL checkIfProcessIsAlreadyRunning(){
+	DWORD aProcesses[1024], cbNeeded, cProcesses;
+	unsigned int i;
+
+	if ( !EnumProcesses( aProcesses, sizeof(aProcesses), &cbNeeded ) )
+	{
+		return false;
+	}
+
+	// Calculate how many process identifiers were returned.
+	cProcesses = cbNeeded / sizeof(DWORD);
+
+	// check each Process if name matches "nw.exe"
+	for ( i = 0; i < cProcesses; i++ )
+	{
+		if( aProcesses[i] != 0 )
+		{
+			TCHAR szProcessName[MAX_PATH] = TEXT("<unknown>");
+			// Get a handle to the process.
+			HANDLE hProcess = OpenProcess( PROCESS_QUERY_INFORMATION |
+				PROCESS_VM_READ,
+				FALSE, aProcesses[i] );
+			// Get the process name.
+			if (NULL != hProcess )
+			{
+				HMODULE hMod;
+				DWORD cbNeeded;
+				if ( EnumProcessModules( hProcess, &hMod, sizeof(hMod), 
+					&cbNeeded) )
+				{
+					GetModuleBaseName( hProcess, hMod, szProcessName, 
+						sizeof(szProcessName)/sizeof(TCHAR) );
+				}
+			}
+			// Print the process name and identifier.
+			//_tprintf( TEXT("%s  (PID: %u)\n"), szProcessName, processID );
+			if ((wcscmp(szProcessName, L"nw.exe"))==0)
+			{
+				// Release the handle to the process.
+				CloseHandle( hProcess );				
+				return true;
+			}
+			CloseHandle( hProcess );				
+		}
+	}
+return false;
 }
