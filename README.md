@@ -36,3 +36,8 @@ Then just add the JS/splashinfo.js to your app and call
 ```js
 splashInfo.set('Message you want to show above the progress bar', 10, [waitTime/Timeout]);
 ```
+
+splashInfo.set(message, progress, [waitTime/Timeout]);
+message: this is displayed above the progress bar
+progress: the amount of progress that should be added to the total progress.
+an optional parameter where you can specify a timeout, e.g. for testing purposes.
