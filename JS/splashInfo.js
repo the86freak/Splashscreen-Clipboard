@@ -4,7 +4,7 @@
         totalProgress = 0,
         currentMessage = '',
         maximizeOnce = false;
-
+    var win = gui.Window.get();
     /**
      Exports
      */
